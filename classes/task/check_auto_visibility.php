@@ -37,9 +37,7 @@ class check_auto_visibility extends \core\task\scheduled_task
     {
         global $DB;
 
-        $start = $this->get_last_run_time();
         $end = time();
-
 
         $field = $DB->get_record('customfield_field', ['shortname' => 'auto_visibility']);
 
@@ -58,11 +56,10 @@ class check_auto_visibility extends \core\task\scheduled_task
 
             //$DB->set_debug(true);
             $entries = $DB->get_records_sql('SELECT cd.value, c.* FROM {customfield_data} cd LEFT JOIN {course} c ON c.id = cd.instanceid WHERE
-                                        cd.fieldid = ? AND cd.value = ? AND c.visible = ? AND c.startdate BETWEEN ? AND ?', [
+                                        cd.fieldid = ? AND cd.value = ? AND c.visible = ? AND c.startdate < ?', [
                 $field->id,
                 "1",
                 "0",
-                $start,
                 $end
             ]);
 
@@ -76,12 +73,11 @@ class check_auto_visibility extends \core\task\scheduled_task
                 . ' and ' . date('Y-m-d H:i:s', $end));
 
             $entries = $DB->get_records_sql('SELECT cd.value, c.* FROM {customfield_data} cd LEFT JOIN {course} c ON c.id = cd.instanceid WHERE
-                                        cd.fieldid = ? AND cd.value = ? AND c.visible = ? AND c.enddate > ? AND c.enddate BETWEEN ? AND ?', [
+                                        cd.fieldid = ? AND cd.value = ? AND c.visible = ? AND c.enddate < ?', [
                 $field->id,
                 "1",
                 "1",
                 "0",
-                $start,
                 $end
             ]);
 
